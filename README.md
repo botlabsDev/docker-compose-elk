@@ -1,4 +1,4 @@
-# Basic ELKG (Elasticseach, Logstash, Kibana and Grafana) for docker-compose
+# Basic ELKG (Elasticsearch, Logstash, Kibana and Grafana) for docker-compose
 
 If you just quickly want to evaluate some data in Kibana or Grafana, this docker-compose file is your way to go.
 It just starts and connects Elasticsearch, Logstash, Kibana and Grafana.
@@ -20,8 +20,8 @@ $ sudo docker-compose up
 
 ## Services available
 
-* Elasticseach: http://localhost:9200
-* Elasticseach: http://localhost:9300
+* Elasticsearch: http://localhost:9200
+* Elasticsearch: http://localhost:9300
 * Logstash: http://localhost:5000
 * Logstash: http://localhost:9600
 * Kibana: http://localhost:5601
