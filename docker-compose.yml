@@ -1,0 +1,140 @@
+version: '3.2'
+
+services:
+  es01:
+    container_name: es01
+    build:
+      context: elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - type: bind
+        source: ./elasticsearch/config/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+      - type: volume
+        source: elasticsearch
+        target: /usr/share/elasticsearch/data
+    ports:
+      - 127.0.0.1:9200:9200
+      - 127.0.0.1:9300:9300
+    environment:
+      - node.name=es01
+      - node.max_local_storage_nodes=2
+      - discovery.seed_hosts=es02
+      - cluster.initial_master_nodes=es01,es02
+      - bootstrap.memory_lock=true
+      - $ES_JAVA_OPTS
+      - ELASTIC_PASSWORD=changeme
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - elk
+    restart: unless-stopped
+
+  es02:
+    container_name: es02
+    build:
+      context: elasticsearch/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - type: bind
+        source: ./elasticsearch/config/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+      - type: volume
+        source: elasticsearch
+        target: /usr/share/elasticsearch/data
+    environment:
+      - node.name=es02
+      - node.max_local_storage_nodes=2
+      - discovery.seed_hosts=es01
+      - cluster.initial_master_nodes=es01,es02
+      - bootstrap.memory_lock=true
+      - $ES_JAVA_OPTS
+      - ELASTIC_PASSWORD=changeme
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    networks:
+      - elk
+    restart: unless-stopped
+
+  logstash:
+    container_name: logstash
+    build:
+      context: logstash/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    volumes:
+      - type: bind
+        source: ./logstash/config/logstash.yml
+        target: /usr/share/logstash/config/logstash.yml
+        read_only: true
+      - type: bind
+        source: ./logstash/pipeline
+        target: /usr/share/logstash/pipeline
+        read_only: true
+    ports:
+      - 127.0.0.1:5000:5000
+      - 127.0.0.1:9600:9600
+    environment:
+      - $LS_JAVA_OPTS
+    networks:
+      - elk
+    depends_on:
+      - es01
+      - es02
+    restart: unless-stopped
+
+  kibana:
+    build:
+      context: kibana/
+      args:
+        ELK_VERSION: $ELK_VERSION
+    container_name: kibana
+    volumes:
+      - type: bind
+        source: ./kibana/config/kibana.yml
+        target: /usr/share/kibana/config/kibana.yml
+        read_only: true
+    environment:
+      - "ELASTICSEARCH_URL=http://es01:9200"
+      - "ELASTICSEARCH_HOSTS=http://es01:9200"
+    ports:
+      - 127.0.0.1:5601:5601
+    networks:
+      - elk
+    depends_on:
+      - es01
+      - es02
+    restart: unless-stopped
+
+  grafana:
+      image: grafana/grafana:latest
+      container_name: grafana
+      volumes:
+        - ./grafana/data:/var/lib/grafana
+      ports:
+        - 127.0.0.1:3000:3000
+      user: "0"
+      environment:
+        - "ELASTICSEARCH_URL=http://es01:9200"
+        - "ELASTICSEARCH_HOSTS=http://es01:9200"
+      networks:
+        - elk
+      depends_on:
+        - es01
+        - es02
+      restart: unless-stopped
+
+networks:
+  elk:
+    driver: bridge
+
+volumes:
+  elasticsearch:
