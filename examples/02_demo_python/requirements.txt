@@ -1,0 +1,5 @@
+tqdm
+elasticsearch
+requests
+pytz
+shodan
