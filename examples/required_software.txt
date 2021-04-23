@@ -1,0 +1,14 @@
+sudo apt-get install python3.7 python3-virtualenv
+sudo snap install pycharm-community --classic
+
+sudo apt-get install docker docker-compose
+sudo groupadd docker
+sudo usermod -aG docker $USER
+newgrp docker
+
+
+# git clone https://github.com/botlabsDev/basic-elkg.git
+cd basic-elkg
+./setSystemLimits.sh
+docker-compose up
+
