@@ -12,7 +12,7 @@ API_KEY = "<API KEY>"
 
 def main():
     data = get_ip_data_from_shodan(API_KEY)
-    sendJsonDataToEs(data, "2005_shodan_data")
+    sendJsonDataToEs(data, "2004444odan_data")
 
 
 def get_ip_data_from_shodan(api_key):

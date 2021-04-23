@@ -14,7 +14,7 @@ ES_CODE_DATA_ALREADY_EXIST = 409
 def main():
     opts = _parseArgs()
     lines = readJsonFile(opts.files)
-    sendJsonDataToEs(lines, "0202_default_json_import")
+    sendJsonDataToEs(lines, "0202_names_json")
 
 
 def _parseArgs():

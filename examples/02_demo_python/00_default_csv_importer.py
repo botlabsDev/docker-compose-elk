@@ -13,7 +13,7 @@ ES_CODE_DATA_ALREADY_EXIST = 409
 def main():
     opts = _parseArgs()
     lines = readCsvFile(opts.files)
-    sendCsvDataToEs(lines, "0200_default_csv_import")
+    sendCsvDataToEs(lines, "0200_btc_eur")
 
 
 def _parseArgs():

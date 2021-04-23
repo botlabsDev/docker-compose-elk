@@ -13,7 +13,7 @@ ES_CODE_DATA_ALREADY_EXIST = 409
 
 def main():
     data = get_crypt_exchange_rates()
-    sendJsonDataToEs(data, "crypt_eur")
+    sendJsonDataToEs(data, "0203_stream_btc_eur")
 
 
 def get_crypt_exchange_rates():
