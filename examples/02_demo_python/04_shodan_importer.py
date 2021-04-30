@@ -45,16 +45,21 @@ def sendJsonDataToEs(lines, index):
         l = _clean_fields(l)
         es.create(index=index, id=l["_shodan"]["id"], body=l, ignore=[ES_CODE_DATA_ALREADY_EXIST], request_timeout=10)
 
+        
 def _clean_fields(l):
-    ## fields to long
+    forbidden_fields = ["vulns",  ## Field is to long
+                        "_id",    ## Field [_id] is a metadata field and cannot be added inside a document.
+                        ]
 
-    if "vulns" in l:
-        l["vulns"] = []
+    for field in forbidden_fields:
+        if field in l:
+            l.pop(field)
     try:
         l["ssl"]["cert"]["serial"] = ""
     except KeyError:
         pass
     return l
+
 
 def _get_hash(l):
     # create hash from unique field combinations
